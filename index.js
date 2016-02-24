@@ -13,3 +13,27 @@ var User = connection.define('user', {
     name: Sequelize.TEXT,
     password: Sequelize.TEXT
 });
+
+var saveUser = function(username, password){
+    bcrypt.genSalt(10, function(err, salt){
+        console.log("Salt the first time around is " + salt);
+        bcrypt.hash(password, salt, function(err, hash){
+            User.create({
+                name: username,
+                password: hash
+            })
+        })
+    })
+}
+
+var checkUser = function(username, password){
+    User.findOne({
+        where: {
+            name: username,
+        }
+    }).then(function(results){
+        bcrypt.compare(password, results.dataValues.password, function(err, results){
+            console.log("Results are " + results); 
+        })
+    })
+}
