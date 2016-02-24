@@ -10,30 +10,26 @@ prompt.message = '';
 
 //model
 var User = connection.define('user', {
-    name: Sequelize.TEXT,
-    password: Sequelize.TEXT
-});
-
-var saveUser = function(username, password){
-    bcrypt.genSalt(10, function(err, salt){
-        console.log("Salt the first time around is " + salt);
-        bcrypt.hash(password, salt, function(err, hash){
-            User.create({
-                name: username,
-                password: hash
-            })
-        })
-    })
-}
-
-var checkUser = function(username, password){
-    User.findOne({
-        where: {
-            name: username,
+    username: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true
+    },
+    password: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        validate: {
+            len: {
+                args: [5,10],
+                msg: "Your password must be between 5-10 characters"
+            },
+            isUppercase: true
         }
-    }).then(function(results){
-        bcrypt.compare(password, results.dataValues.password, function(err, results){
-            console.log("Results are " + results); 
-        })
-    })
-}
+    }
+}, {
+    hooks: {
+        beforeCreate: function(input){
+            input.password = bcrypt.hashSync(input.password, 10);
+        }
+    }
+});
