@@ -27,7 +27,7 @@ prompt.get(['input'], function(err, result) {
                 });
             });
         });
-    } else {
+    } ele {
         
     }
 });
